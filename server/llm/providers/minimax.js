@@ -34,8 +34,23 @@ export async function chat(messages, options = {}) {
     return response.data
   }
 
+  // MiniMax wraps every response with a `base_resp` envelope. On
+  // success status_code is 0; on auth/model/quota errors they return
+  // a 200 with non-zero status_code and NO `choices` array, which is
+  // why the old `response.data.choices[0]` lookup blew up with the
+  // unhelpful "undefined is not an object" message that the user
+  // actually saw in the chat UI.
+  const data = response.data || {}
+  const base = data.base_resp || {}
+  if (base.status_code && base.status_code !== 0) {
+    throw new Error(`MiniMax ${base.status_code}: ${base.status_msg || 'unknown error'}`)
+  }
+  const choice = data.choices?.[0]
+  if (!choice?.message) {
+    throw new Error(`MiniMax returned no message. body=${JSON.stringify(data).slice(0, 300)}`)
+  }
   return {
-    content: response.data.choices[0].message.content,
-    usage: response.data.usage
+    content: choice.message.content || '',
+    usage: data.usage
   }
 }

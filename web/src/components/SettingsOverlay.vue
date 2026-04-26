@@ -9,6 +9,7 @@
           :class="isDark ? 'border-white/10' : 'border-primary-dark/10'">
           <p class="text-subtitle font-medium transition-theme" :class="isDark ? 'text-primary-cream' : 'text-primary-dark'">
             Settings
+            <span class="ml-2 text-caption font-mono align-middle opacity-50">{{ appVersion }}</span>
           </p>
           <button @click="settings.toggleSettings" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 ease-out-expo"
             :class="isDark ? 'hover:bg-white/10 text-primary-cream/60' : 'hover:bg-primary-dark/10 text-primary-dark/60'">
@@ -209,6 +210,7 @@ import { onMounted, computed, ref, reactive, watch } from 'vue'
 import { useTheme } from '../composables/useTheme.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { useCalendarStore } from '../stores/calendar.js'
+import { appVersion } from '../composables/useAppVersion.js'
 
 const { isDark } = useTheme()
 const settings = useSettingsStore()

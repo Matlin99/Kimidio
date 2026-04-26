@@ -14,6 +14,7 @@
           <span class="w-3 h-3 rounded-full bg-[#FFBD2E]"></span>
           <span class="w-3 h-3 rounded-full bg-[#27C93F]"></span>
           <span class="ml-3 text-[11px] text-white/40 tracking-wider font-mono">kimi — terminal</span>
+          <span class="ml-auto text-[11px] text-white/30 tracking-wider font-mono">{{ appVersion }}</span>
         </div>
 
         <!-- Terminal body -->
@@ -39,6 +40,7 @@ import { useSettingsStore } from '../stores/settings.js'
 import { usePlayerStore } from '../stores/player.js'
 import { useCalendarStore } from '../stores/calendar.js'
 import TypewriterText from './TypewriterText.vue'
+import { appVersion } from '../composables/useAppVersion.js'
 
 const props = defineProps({
   show: { type: Boolean, default: false }

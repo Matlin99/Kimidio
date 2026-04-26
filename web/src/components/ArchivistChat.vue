@@ -25,6 +25,7 @@
                 class="text-caption uppercase tracking-wider transition-colors duration-200 ease-out-expo"
                 :class="activeProviderClass">
                 {{ activeProvider.label }}
+                <span class="ml-2 font-mono normal-case opacity-50 tracking-normal">{{ appVersion }}</span>
               </button>
             </div>
           </div>
@@ -210,6 +211,7 @@ import { useSettingsStore } from '../stores/settings.js'
 import { usePlayerStore } from '../stores/player.js'
 import { tts } from '../composables/useTTS.js'
 import { useSpeechRecognition } from '../composables/useSpeechRecognition.js'
+import { appVersion } from '../composables/useAppVersion.js'
 import TypewriterText from './TypewriterText.vue'
 
 const speech = useSpeechRecognition()

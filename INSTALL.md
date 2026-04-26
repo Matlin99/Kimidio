@@ -6,7 +6,7 @@
 
 ## 1. 安裝（macOS）
 
-下載 `Kimi Radio_0.1.2_aarch64.dmg`（Apple Silicon Mac M1/M2/M3/M4，~62MB）。
+下載 `Kimi Radio_0.1.3_aarch64.dmg`（Apple Silicon Mac M1/M2/M3/M4，~62MB）。
 
 ### 步驟
 
@@ -33,7 +33,7 @@ xattr -cr "/Applications/Kimi Radio.app"
 
 > 如果你**還沒下載前**就想避免這個提示：可以在 Terminal 直接 `curl` 下載，這樣就不會帶 quarantine 屬性：
 > ```bash
-> curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.2_aarch64.dmg"
+> curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.3_aarch64.dmg"
 > open Kimi*.dmg
 > ```
 
