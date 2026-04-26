@@ -2,8 +2,8 @@
 
 **Your personal AI radio — desktop app edition.** A floating pet window on your screen with an AI DJ that picks tracks based on your time of day, weather, and calendar; speaks intros for each song; and chats back when you ask for recommendations.
 
-> **⚠️ v0.1.0 — Preview Release**
-> First public testing build. Expect rough edges. Bug reports welcome via [Issues](https://github.com/Matlin99/Kimidio/issues).
+> **⚠️ v0.1.1 — Preview Release**
+> Public testing build. v0.1.1 ships zero-click BYOK auto-apply with live status badges (the v0.1.0 "↻ Apply" friction is gone). Expect rough edges elsewhere — bug reports welcome via [Issues](https://github.com/Matlin99/Kimidio/issues).
 
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri)](https://tauri.app/)
 [![Vue](https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js)](https://vuejs.org/)
@@ -30,16 +30,16 @@
 
 ### Download & Install
 
-**macOS Apple Silicon (M1 / M2 / M3 / M4)** — only platform shipped in v0.1.0.
+**macOS Apple Silicon (M1 / M2 / M3 / M4)** — only platform shipped so far.
 
 #### 1. Download
 
-Latest release: **[v0.1.0 — Kimi Radio_0.1.0_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)** (~62 MB)
+Latest release: **[v0.1.1 — Kimi Radio_0.1.1_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)** (~62 MB)
 
 Or via terminal:
 
 ```bash
-curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.0_aarch64.dmg"
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.1_aarch64.dmg"
 ```
 
 #### 2. Install
@@ -218,16 +218,16 @@ MIT — see [`LICENSE`](./LICENSE).
 
 ### 下載 & 安裝
 
-**僅支援 macOS Apple Silicon（M1 / M2 / M3 / M4）** — v0.1.0 只出 ARM64 Mac 版。
+**僅支援 macOS Apple Silicon（M1 / M2 / M3 / M4）** — 目前只出 ARM64 Mac 版。
 
 #### 1. 下載
 
-最新版本：**[v0.1.0 — Kimi Radio_0.1.0_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)**（約 62 MB）
+最新版本：**[v0.1.1 — Kimi Radio_0.1.1_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)**（約 62 MB）
 
 或者用 terminal：
 
 ```bash
-curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.0_aarch64.dmg"
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.1_aarch64.dmg"
 ```
 
 #### 2. 安裝
@@ -287,7 +287,7 @@ MIT — 詳見 [`LICENSE`](./LICENSE)。
 
 ---
 
-## Roadmap (post-v0.1.0)
+## Roadmap (post-v0.1.1)
 
 - [ ] Resume playback on app restart
 - [ ] Linux / Windows builds
