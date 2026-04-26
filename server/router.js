@@ -656,7 +656,7 @@ Plain text replies are ONLY for genuine chat with ZERO song mentions
     const configured = getProviderStatus()
       .filter(p => p.configured && !p.isMock)
       .map(p => p.name)
-    const speedPriority = ['kimi', 'openai', 'claude', 'minimax']
+    const speedPriority = ['kimi', 'gemini', 'openai', 'claude', 'minimax']
     const tryOrder = speedPriority.filter(p => configured.includes(p))
     if (tryOrder.length === 0) tryOrder.push('mock')
 
@@ -765,7 +765,7 @@ Return ONLY the greeting sentence. No prefix, no explanation.`
 
     const configured = getProviderStatus()
       .filter(p => p.configured && !p.isMock).map(p => p.name)
-    const tryOrder = ['kimi', 'openai', 'claude', 'minimax'].filter(p => configured.includes(p))
+    const tryOrder = ['kimi', 'gemini', 'openai', 'claude', 'minimax'].filter(p => configured.includes(p))
     if (tryOrder.length === 0) tryOrder.push('mock')
 
     const sys = deep
@@ -854,7 +854,7 @@ Track: "${title}"${artist ? ` by ${artist}` : ''}.`
     const configured = getProviderStatus()
       .filter(p => p.configured && !p.isMock)
       .map(p => p.name)
-    const speedPriority = ['kimi', 'openai', 'claude', 'minimax']
+    const speedPriority = ['kimi', 'gemini', 'openai', 'claude', 'minimax']
     const tryOrder = speedPriority.filter(p => configured.includes(p))
     if (tryOrder.length === 0) tryOrder.push('mock')
 

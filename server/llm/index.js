@@ -2,9 +2,10 @@ import * as kimi from './providers/kimi.js'
 import * as claude from './providers/claude.js'
 import * as openai from './providers/openai.js'
 import * as minimax from './providers/minimax.js'
+import * as gemini from './providers/gemini.js'
 import * as mock from './providers/mock.js'
 
-const realProviders = { kimi, claude, openai, minimax }
+const realProviders = { kimi, claude, openai, minimax, gemini }
 
 export function getAvailableProviders() {
   return Object.entries(realProviders)
@@ -19,6 +20,7 @@ export function getProviderStatus() {
     defaultModel: name === 'kimi' ? 'moonshot-v1-8k'
       : name === 'claude' ? 'claude-3-5-sonnet-20241022'
       : name === 'minimax' ? 'MiniMax-M2'
+      : name === 'gemini' ? 'gemini-2.5-flash'
       : 'gpt-4o-mini'
   }))
 

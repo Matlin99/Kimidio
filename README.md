@@ -2,8 +2,8 @@
 
 **Your personal AI radio — desktop app edition.** A floating pet window on your screen with an AI DJ that picks tracks based on your time of day, weather, and calendar; speaks intros for each song; and chats back when you ask for recommendations.
 
-> **⚠️ v0.1.4 — Preview Release**
-> Public testing build. v0.1.4 makes `/api/chat` auto-fall-through to other configured providers when the preferred one fails — one bad MiniMax key (e.g. wrong region / no `MiniMax-M2` access) no longer kills the whole chat experience as long as you've also pasted a Kimi/OpenAI/Claude key. Bug reports welcome via [Issues](https://github.com/Matlin99/Kimidio/issues).
+> **⚠️ v0.1.5 — Preview Release**
+> Public testing build. v0.1.5 adds **Google Gemini** as a 5th LLM provider (default `gemini-2.5-flash`, free 1500 req/day on AI Studio), and surfaces per-row connection dots + Model overrides for MiniMax / Gemini in Settings so you can target newer model variants without rebuilding. Bug reports welcome via [Issues](https://github.com/Matlin99/Kimidio/issues).
 
 [![Tauri](https://img.shields.io/badge/Tauri-2.x-24C8DB?logo=tauri)](https://tauri.app/)
 [![Vue](https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vue.js)](https://vuejs.org/)
@@ -17,7 +17,7 @@
 
 ### Highlights
 
-- 🧠 **Multi-LLM AI DJ** — Kimi · OpenAI · Claude · MiniMax with automatic fallback
+- 🧠 **Multi-LLM AI DJ** — Kimi · Gemini · OpenAI · Claude · MiniMax with automatic fallback chain
 - 🎵 **Dual music sources** — SoundCloud streams primary; YouTube (via bundled `yt-dlp`) covers Mandopop / J-pop / cold-catalog tracks
 - 🗣️ **Free TTS** — Microsoft Edge TTS (en-GB Sonia voice, no API key required)
 - 💬 **AI DJ Terminal** — chat for recommendations, ask about a track's history (Chinese in / English out)
@@ -34,12 +34,12 @@
 
 #### 1. Download
 
-Latest release: **[v0.1.4 — Kimi Radio_0.1.4_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)** (~62 MB)
+Latest release: **[v0.1.5 — Kimi Radio_0.1.5_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)** (~62 MB)
 
 Or via terminal:
 
 ```bash
-curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.4_aarch64.dmg"
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.5_aarch64.dmg"
 ```
 
 #### 2. Install
@@ -91,7 +91,7 @@ Full walkthrough including troubleshooting & uninstall: [`INSTALL.md`](./INSTALL
 │      └─ yt-dlp (~35 MB)                        │
 └────────────────────────────────────────────────┘
         │
-        ├─ LLM:    Kimi / OpenAI / Claude / MiniMax
+        ├─ LLM:    Kimi / Gemini / OpenAI / Claude / MiniMax
         ├─ Music:  SoundCloud + YouTube (via yt-dlp)
         ├─ TTS:    Microsoft Edge TTS (no key)
         └─ Weather: OpenWeather (optional)
@@ -222,12 +222,12 @@ MIT — see [`LICENSE`](./LICENSE).
 
 #### 1. 下載
 
-最新版本：**[v0.1.4 — Kimi Radio_0.1.4_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)**（約 62 MB）
+最新版本：**[v0.1.5 — Kimi Radio_0.1.5_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)**（約 62 MB）
 
 或者用 terminal：
 
 ```bash
-curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.4_aarch64.dmg"
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.5_aarch64.dmg"
 ```
 
 #### 2. 安裝
@@ -287,7 +287,7 @@ MIT — 詳見 [`LICENSE`](./LICENSE)。
 
 ---
 
-## Roadmap (post-v0.1.4)
+## Roadmap (post-v0.1.5)
 
 - [ ] Resume playback on app restart
 - [ ] Linux / Windows builds

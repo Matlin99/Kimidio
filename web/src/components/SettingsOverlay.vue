@@ -242,6 +242,15 @@ const byokKeys = [
   { id: 'KIMI_API_KEY',     label: 'Kimi (Moonshot)',  hint: 'platform.moonshot.cn' },
   { id: 'OPENAI_API_KEY',   label: 'OpenAI',            hint: 'platform.openai.com' },
   { id: 'CLAUDE_API_KEY',   label: 'Anthropic Claude',  hint: 'console.anthropic.com' },
+  // Gemini gets a generous free tier on AI Studio (1500 req/day) and
+  // tends to handle music nuance / anachronism better than MiniMax.
+  // Default model gemini-2.5-flash; override to -pro / -flash-lite below.
+  {
+    id: 'GEMINI_API_KEY',   label: 'Google Gemini',     hint: 'aistudio.google.com',
+    extras: [
+      { id: 'GEMINI_MODEL', label: 'Model (optional)',  placeholder: 'gemini-2.5-flash (default)' }
+    ]
+  },
   // MiniMax has multiple regional endpoints (api.minimax.chat for China,
   // api.minimax.io / api.minimaxi.com international) and a fast-moving
   // model lineup (M2, M2.7, abab6.5s-chat). Lock-step defaults break
@@ -276,6 +285,7 @@ const PROVIDER_FOR_KEY = {
   OPENAI_API_KEY: 'openai',
   CLAUDE_API_KEY: 'claude',
   MINIMAX_API_KEY: 'minimax',
+  GEMINI_API_KEY: 'gemini',
   // OPENWEATHER_KEY isn't an LLM, no provider entry — handled separately.
 }
 

@@ -38,6 +38,7 @@ const BYOK_KEYS: &[&str] = &[
     "OPENAI_API_KEY",
     "CLAUDE_API_KEY",
     "MINIMAX_API_KEY",
+    "GEMINI_API_KEY",
     "OPENWEATHER_KEY",
     "TTS_VOICE",
     // MiniMax advanced overrides — let users target newer models
@@ -45,6 +46,9 @@ const BYOK_KEYS: &[&str] = &[
     // endpoint without recompiling.
     "MINIMAX_MODEL",
     "MINIMAX_BASE_URL",
+    // Gemini model override (default gemini-2.5-flash) for users who
+    // want to target -pro or -flash-lite from the same key.
+    "GEMINI_MODEL",
 ];
 
 const STORE_FILE: &str = "byok.json";

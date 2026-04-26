@@ -6,7 +6,7 @@
 
 ## 1. 安裝（macOS）
 
-下載 `Kimi Radio_0.1.4_aarch64.dmg`（Apple Silicon Mac M1/M2/M3/M4，~62MB）。
+下載 `Kimi Radio_0.1.5_aarch64.dmg`（Apple Silicon Mac M1/M2/M3/M4，~62MB）。
 
 ### 步驟
 
@@ -33,7 +33,7 @@ xattr -cr "/Applications/Kimi Radio.app"
 
 > 如果你**還沒下載前**就想避免這個提示：可以在 Terminal 直接 `curl` 下載，這樣就不會帶 quarantine 屬性：
 > ```bash
-> curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.4_aarch64.dmg"
+> curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.5_aarch64.dmg"
 > open Kimi*.dmg
 > ```
 
@@ -55,9 +55,10 @@ App 啟動後，看到 Landing 畫面**先別按 BEGIN**，先設定 API key：
 | Provider | 申請連結 | 推薦度 |
 |----------|---------|--------|
 | **Kimi (Moonshot)** | [platform.moonshot.cn](https://platform.moonshot.cn/console/api-keys) | ⭐⭐⭐ 註冊送 USD$15 額度，最便宜 |
+| **Google Gemini** | [aistudio.google.com](https://aistudio.google.com/app/apikey) | ⭐⭐⭐ 免費 1500 req/day，音樂知識強 |
 | OpenAI | [platform.openai.com](https://platform.openai.com/api-keys) | ⭐⭐ 要綁卡 |
 | Anthropic Claude | [console.anthropic.com](https://console.anthropic.com/settings/keys) | ⭐⭐ |
-| MiniMax | [minimax.chat](https://api.minimax.chat) | ⭐ |
+| MiniMax | [minimax.chat](https://api.minimax.chat) | ⭐ 部分 model (M2.7) 要單獨開通 |
 
 **只填一個就夠**。**貼上 key 後不用按任何按鈕** —— 1.5 秒後 app 會自動把 key 寫進 disk 並重啟內部 LLM 服務。
 
