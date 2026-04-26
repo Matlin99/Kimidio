@@ -261,9 +261,9 @@ Both "say" and "picks" are REQUIRED — do not omit "say".
       }
       if (!parsed?.picks?.length) return null
 
-      // Resolve picks in parallel against SoundCloud (playable in all regions,
-      // no 404s on URL fetch; NCM left out of curate path because too many
-      // tracks are geo-blocked).
+      // Resolve picks in parallel against SoundCloud first (direct progressive
+      // streams, no cipher). Misses fall through to YT search + yt-dlp at
+      // playback time, covering Mandopop / J-pop / cold-catalog tracks.
       // Filter: reject hits whose title+artist share no significant tokens
       // with the LLM pick — SC returns a "best effort" first result even for
       // totally unrelated queries (e.g. an Arabic Quran recitation for an
@@ -514,8 +514,8 @@ Plain text replies are ONLY for genuine chat with ZERO song mentions
         }
       }
 
-      // Resolve structured recommendations against SoundCloud (NCM is
-      // geo-blocked for this user). Each pick may be a string "title" or
+      // Resolve structured recommendations against SoundCloud first, then
+      // YT Music if SC misses. Each pick may be a string "title" or
       // an object {title, artist}; filter out cover/karaoke/AI-voice hits.
       if (structured?.play?.length > 0) {
         const queue = []

@@ -60,8 +60,8 @@ export async function getDetail(track) {
 }
 
 export async function getLyric(_track) {
-  // Lyrics dropped with NCM — no other configured source provides them.
-  // If we add back a lyric source later (e.g. lrclib.net), wire it here.
+  // No lyric source currently configured. If you add one (e.g. lrclib.net,
+  // SoundCloud SCRAPE), wire it here.
   return ''
 }
 

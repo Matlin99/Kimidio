@@ -1,136 +1,198 @@
 # Kimi Radio 🎵
 
-個人 AI 電台 —— 以 Kimi 為大腦，網易雲音樂為音源，Fish Audio 為語音，打造專屬於你的智能音樂伴侶。
+個人 AI 電台桌面 app — 你的時間、天氣、行事曆驅動 AI DJ 挑歌、講解、播報，永遠在桌面右上角的小窗。
 
-UI 嚴格還原設計圖，支持明暗雙主題、AI DJ 播報、智能推薦、語音合成、節律調度。
+---
 
-![Player UI](design-reference.png)
+## 功能特色
+
+- 🧠 **多 LLM AI DJ**：Kimi / OpenAI / Claude / MiniMax 自選，自動 fallback
+- 🎵 **SoundCloud + YouTube 雙音源**：SC 直接串流，冷門 / Mandopop / J-pop 用 yt-dlp 抓 YT 音軌補位
+- 🗣️ **TTS 開場 + 點播朗讀**：Microsoft Edge TTS（en-GB Sonia / 免 key）
+- 💬 **AI DJ Terminal**：聊天 / 點歌 / 問曲背景，中英文都通，回覆統一英文
+- 📅 **節律 + 行事曆感知**：早晨 / 午餐 / 下班 / 晚間 / late-night 自動切時段；iCal 日程感知（會議多時偏向 instrumental）
+- 🐾 **桌寵模式**：always-on-top 小窗，可拖、可展開回主窗
+- 🔐 **BYOK**：API keys 加密存本地，不外傳
+- 🎙️ **Voice input**：Web Speech API（Chrome/Edge dev 模式可用）
+- 🎼 **MusicalStory**：每首歌 LLM 生成 liner notes + 藝人 bio
+- 📦 **單檔分發**：Tauri 2 包成 `.dmg`，朋友拖一下就裝好
+
+---
 
 ## 系統架構
 
 ```
-┌─────────────┐     WebSocket/HTTP     ┌──────────────┐
-│   Vue PWA   │ ◄────────────────────► │  Node.js API │
-│  (播放器)    │                        │   (中樞)      │
-└─────────────┘                        └──────┬───────┘
-                                              │
-        ┌────────────┬────────────┬──────────┼──────────┐
-        ▼            ▼            ▼          ▼          ▼
-    Kimi API    Netease API   Fish Audio  OpenWeather  飛書
+┌────────────────────────────────────────────────┐
+│  Tauri 2 desktop shell (Rust)                  │
+│  ├─ main window (Vue 3 PWA)                    │
+│  ├─ pet window (always-on-top, 420×auto)       │
+│  ├─ system tray                                │
+│  └─ sidecar binaries:                          │
+│      ├─ kimi-server (Bun-compiled, ~63MB)      │
+│      │    └─ Express + WS + bun:sqlite         │
+│      └─ yt-dlp (~35MB)                         │
+└────────────────────────────────────────────────┘
+        │
+        ├─ LLM: Kimi / OpenAI / Claude / MiniMax
+        ├─ Music: SoundCloud (主) + YouTube via yt-dlp (fallback)
+        ├─ TTS: Microsoft Edge TTS (免 key)
+        └─ Weather: OpenWeather (optional)
 ```
 
-## 功能特性
+---
 
-- 🎨 **高精度 UI**：520×740px 播放器卡片，嚴格還原設計圖（明暗雙主題）
-- 🧠 **AI DJ**：Kimi 大模型驅動，根據你的品味、時間、天氣推薦音樂
-- 🎵 **網易雲音樂**：本地部署 NeteaseCloudMusicApi，獲取真實音源
-- 🗣️ **語音播報**：Fish Audio TTS，AI DJ 開口說話
-- 📅 **節律調度**：早間播報、小時情緒檢查、日程提醒
-- 💬 **Archivist Terminal**：與 AI 助手對話，了解音樂背後的故事
-- 📱 **PWA**：可安裝為桌面應用，離線緩存
+## 安裝（給朋友測試）
 
-## 快速開始
+下載最新 .dmg → 看 [INSTALL.md](./INSTALL.md) 一步步。
+
+---
+
+## 開發
+
+### 前置需求
+
+- macOS (Apple Silicon 推薦)
+- Node.js 20+
+- Rust (`rustup install stable`)
+- Bun (`curl https://bun.sh/install | bash`)
 
 ### 1. 安裝依賴
 
 ```bash
-npm run install:all
+npm install
+cd web && npm install
+cd ../server && npm install
 ```
 
-### 2. 配置 API Key
-
-複製 `.env.example` 為 `.env`，填入你的 API Key：
+### 2. 配置 API keys（dev mode）
 
 ```bash
 cp server/.env.example server/.env
+# 編輯 server/.env，至少填一個 LLM key
 ```
 
-| Key | 用途 | 申請地址 |
-|-----|------|---------|
-| `KIMI_API_KEY` | AI 大腦 | https://platform.moonshot.cn |
-| `FISH_AUDIO_KEY` | TTS 語音 | https://fish.audio |
-| `OPENWEATHER_KEY` | 天氣 | https://openweathermap.org/api |
+| Key | 用途 | 申請 |
+|-----|------|------|
+| `KIMI_API_KEY` | LLM | [platform.moonshot.cn](https://platform.moonshot.cn) |
+| `OPENAI_API_KEY` | LLM | [platform.openai.com](https://platform.openai.com) |
+| `CLAUDE_API_KEY` | LLM | [console.anthropic.com](https://console.anthropic.com) |
+| `MINIMAX_API_KEY` | LLM | [minimax.chat](https://api.minimax.chat) |
+| `OPENWEATHER_KEY` | 天氣（選） | [openweathermap.org/api](https://openweathermap.org/api) |
 
-### 3. 啟動網易雲音樂 API
+### 3. 編譯 sidecar binary
 
 ```bash
-git clone https://github.com/Binaryify/NeteaseCloudMusicApi.git
-cd NeteaseCloudMusicApi
-npm install
-node app.js
-# 服務運行在 http://localhost:3000
+bash server/build.sh
+# 產出 server/dist/kimi-server-{darwin-arm64,darwin-x64,windows-x64,linux-x64}
+# 複製到 Tauri 的 binaries 路徑
+cp server/dist/kimi-server-darwin-arm64 src-tauri/binaries/kimi-server-aarch64-apple-darwin
 ```
 
-### 4. 啟動 Kimi Radio
+### 4. 下載 yt-dlp binary
 
 ```bash
-npm run dev
+curl -L -o src-tauri/binaries/yt-dlp-aarch64-apple-darwin \
+  https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos
+chmod +x src-tauri/binaries/yt-dlp-aarch64-apple-darwin
 ```
 
-這會同時啟動：
-- 前端：`http://localhost:5173`
-- 後端：`http://localhost:8080`
-- WebSocket：`ws://localhost:8080/stream`
+### 5. 啟動
 
-### 5. 打開瀏覽器
+```bash
+npm run tauri:dev
+```
 
-訪問 `http://localhost:5173`，享受你的個人 AI 電台！
+Vite 跑在 5173、Tauri 主窗自動開、sidecar 由 Tauri 啟動（隨機 port）。
+
+### 6. 打包 .dmg
+
+```bash
+npm run tauri:build
+# 產出 src-tauri/target/release/bundle/dmg/Kimi Radio_<version>_aarch64.dmg
+```
+
+---
 
 ## 文件結構
 
 ```
 kimi-radio/
-├── web/              # Vue 3 PWA 前端
+├── web/                 # Vue 3 + Vite 前端
 │   ├── src/
-│   │   ├── components/   # UI 組件（播放器、對話框、設置等）
-│   │   ├── stores/       # Pinia 狀態管理
-│   │   ├── composables/  # 可復用邏輯（主題、音頻、WS）
-│   │   └── assets/       # 字體、圖片
-│   └── tailwind.config.js # Design Token 配置
+│   │   ├── App.vue              # 主窗 root
+│   │   ├── PetApp.vue           # pet 窗 root（hash route #/pet）
+│   │   ├── components/          # PlayerCard / TopPanel / MiniStatusBar / ArchivistChat / ...
+│   │   ├── stores/              # Pinia: player, chat, settings, schedule, calendar
+│   │   └── composables/         # useApiBase, useTTS, useBroadcastSync, useTheme, ...
+│   └── tailwind.config.js
 │
-├── server/           # Node.js 中樞
-│   ├── index.js          # Express + WebSocket 入口
-│   ├── router.js         # API 路由
-│   ├── kimi.js           # Kimi API 適配器
-│   ├── ncm-client.js     # 網易雲客戶端
-│   ├── scheduler.js      # 節律調度器
-│   ├── context.js        # Context Window 組裝
-│   ├── data/             # 用戶語料（taste.md, routines.md 等）
-│   └── prompts/          # AI 人設提示詞
+├── server/              # Express + WS + LLM hub
+│   ├── index.js                 # 入口（Bun + Node 雙 runtime）
+│   ├── router.js                # /api/* endpoints
+│   ├── tts.js                   # Edge TTS 合成 + atomic cache
+│   ├── llm/providers/           # kimi / openai / claude / minimax adapters
+│   ├── music/adapters/          # sc / yt / local
+│   ├── calendar.js              # iCal fetch + per-block summary
+│   ├── scheduler.js             # 早晨 / 小時 / 晚間 cron
+│   ├── context.js               # 6-piece context window assembler
+│   └── build.sh                 # bun --compile 4 平台 binary
 │
-└── package.json      # 根項目腳本
+├── src-tauri/           # Tauri 2 Rust shell
+│   ├── src/lib.rs               # main / pet 窗 + tray + sidecar 監督 + BYOK
+│   ├── tauri.conf.json
+│   └── binaries/                # 不入 git；build script 產出
+│
+├── INSTALL.md           # 朋友測試安裝說明
+├── SELF_CHECK.md        # 功能 audit checklist
+└── package.json
 ```
+
+---
 
 ## 用戶語料
 
-在 `server/data/` 目錄下編輯你的個人資料：
+`server/data/` 編輯你的個人資料 — AI 推薦時會參考：
 
 - **taste.md** — 音樂品味描述
 - **routines.md** — 日常作息偏好
 - **playlists.json** — 喜愛歌單
 - **mood-rules.md** — 情緒與音樂對應規則
 
-AI 會根據這些資料為你量身定制推薦和播報。
+> 注意：行事曆事件**只送計數 + busy minutes 給 LLM**，事件標題 / 內容絕不外傳（隱私設計）。
 
-## 設計規範
+---
 
-| Token | 數值 |
-|-------|------|
-| 主卡片尺寸 | 520 × 740 px |
-| 圓角 | 24 px |
-| 陰影 | 0 20px 40px rgba(0,0,0,0.08) |
-| 主色 | #B0666D (玫瑰紅) |
-| 淺色背景 | #F4EEF0 |
-| 深色背景 | #0F0B0E |
-| 字體 | Inter (正文) + VT323 (點陣時鐘) |
+## 持久化
+
+- **localStorage**：theme / volume / shuffle / repeat / favorites / taste / preferences / provider 選擇
+- **tauri-plugin-store**：BYOK API keys（加密 keys.json）
+- **SQLite (`state.db`)**：chat history、play history（給 LLM 做 dedup）
+- **磁碟 cache**：TTS mp3（atomic rename + md5 key，跨啟動命中）
+- **記憶體 cache**：yt-dlp 解析結果（5h TTL）
+
+---
 
 ## 技術棧
 
-- **前端**：Vue 3 + Vite + Tailwind CSS + Pinia
-- **後端**：Express + WebSocket + SQLite
-- **AI**：Kimi API (OpenAI 兼容)
-- **音樂**：NeteaseCloudMusicApi
-- **語音**：Fish Audio TTS
+| 層 | 技術 |
+|----|------|
+| Frontend | Vue 3 + Vite + Tailwind + Pinia |
+| Desktop shell | Tauri 2 (Rust) |
+| Backend | Express + WebSocket + bun:sqlite |
+| Sidecar runtime | Bun（`bun build --compile`） |
+| LLM | Kimi / OpenAI / Claude / MiniMax (fallback chain) |
+| Music | soundcloud.ts + ytmusic-api + yt-dlp |
+| TTS | msedge-tts (en-GB Sonia) |
+
+---
+
+## 已知限制 / 法律提醒
+
+- **yt-dlp 用於拿 YouTube audio stream** — 違反 YouTube ToS。個人 / 朋友測試 OK，**商業分發要承擔法律風險**
+- **Mandopop / J-pop** SoundCloud 沒貨時走 YT，第一次點要等 ~10s（yt-dlp 解 cipher）
+- **macOS distribution** 只 ad-hoc 簽名（沒花 $99 Apple Developer），朋友右鍵 → Open 略過 Gatekeeper
+
+---
 
 ## License
 
