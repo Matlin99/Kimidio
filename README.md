@@ -28,11 +28,52 @@
 - 🎼 **Musical Story** — LLM-generated liner notes and artist bios for every track
 - 📦 **Single-file distribution** — Tauri 2 packages everything as a `.dmg`
 
-### Install (for testers)
+### Download & Install
 
-Download the latest `.dmg` from [Releases](https://github.com/Matlin99/Kimidio/releases), then follow the step-by-step in [`INSTALL.md`](./INSTALL.md).
+**macOS Apple Silicon (M1 / M2 / M3 / M4)** — only platform shipped in v0.1.0.
 
-You'll need to bring at least one LLM API key (Kimi recommended — free $15 credit on signup at [platform.moonshot.cn](https://platform.moonshot.cn)).
+#### 1. Download
+
+Latest release: **[v0.1.0 — Kimi Radio_0.1.0_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)** (~62 MB)
+
+Or via terminal:
+
+```bash
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.0_aarch64.dmg"
+```
+
+#### 2. Install
+
+1. Double-click the `.dmg` to mount it
+2. Drag **Kimi Radio** into your **Applications** folder
+3. Eject the dmg
+
+#### 3. First launch (important!)
+
+Because the app is **ad-hoc signed** (no $99 Apple Developer subscription), Gatekeeper will block the first launch.
+
+1. Open **Applications** in Finder
+2. **Right-click** on **Kimi Radio** → **Open**
+3. Click **Open** in the warning dialog
+4. From now on you can launch normally
+
+If macOS still complains, run this once in Terminal:
+
+```bash
+xattr -d com.apple.quarantine "/Applications/Kimi Radio.app"
+```
+
+#### 4. Configure your API key
+
+You need at least **one LLM key** to run. **Recommended: Kimi** — sign up at [platform.moonshot.cn](https://platform.moonshot.cn) → free **USD$15** credit.
+
+1. Launch the app
+2. Click the ⚙ **Settings** icon (top-right of player card)
+3. Scroll to **API Keys** → paste your Kimi (or OpenAI / Claude / MiniMax) key
+4. Click **Save Settings** — the in-app server respawns automatically with your new key
+5. Click **BEGIN** and enjoy your radio
+
+Full walkthrough including troubleshooting & uninstall: [`INSTALL.md`](./INSTALL.md).
 
 ### Architecture
 
@@ -173,11 +214,52 @@ MIT — see [`LICENSE`](./LICENSE).
 - 🎼 **MusicalStory** — 每首歌 LLM 生成 liner notes 與藝人 bio
 - 📦 **單檔分發** — Tauri 2 包成 `.dmg`，朋友拖一下就裝好
 
-### 安裝（給朋友測試用）
+### 下載 & 安裝
 
-到 [Releases](https://github.com/Matlin99/Kimidio/releases) 下載最新 `.dmg`，照著 [`INSTALL.md`](./INSTALL.md) 一步步走。
+**僅支援 macOS Apple Silicon（M1 / M2 / M3 / M4）** — v0.1.0 只出 ARM64 Mac 版。
 
-至少要準備一個 LLM API key（推薦 Kimi — [platform.moonshot.cn](https://platform.moonshot.cn) 註冊送 USD$15 額度）。
+#### 1. 下載
+
+最新版本：**[v0.1.0 — Kimi Radio_0.1.0_aarch64.dmg](https://github.com/Matlin99/Kimidio/releases/latest)**（約 62 MB）
+
+或者用 terminal：
+
+```bash
+curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.0_aarch64.dmg"
+```
+
+#### 2. 安裝
+
+1. 雙擊 `.dmg` 開啟
+2. 把 **Kimi Radio** 拖到 **Applications** 資料夾
+3. 退出 dmg
+
+#### 3. 首次啟動（重要！）
+
+App 是 **ad-hoc 簽名**（沒花 $99 Apple Developer），首次開啟 Gatekeeper 會擋。
+
+1. 打開 **Applications**
+2. **右鍵點 Kimi Radio** → **Open**
+3. 警告框點 **Open** 確認
+4. 之後就能正常開啟
+
+如果還是擋，terminal 跑一次：
+
+```bash
+xattr -d com.apple.quarantine "/Applications/Kimi Radio.app"
+```
+
+#### 4. 填 API key
+
+至少要填**一個 LLM key**。**推薦 Kimi** — [platform.moonshot.cn](https://platform.moonshot.cn) 註冊送 **USD$15** 額度。
+
+1. 開 app
+2. 點右上 ⚙ **設定** 圖示
+3. 滾到 **API Keys** → 貼 Kimi（或 OpenAI / Claude / MiniMax）的 key
+4. 按 **Save Settings** — 內部 server 會自動重啟載入新 key
+5. 按 **BEGIN** 開始用
+
+完整步驟 + 故障排解 + 解除安裝：[`INSTALL.md`](./INSTALL.md)。
 
 ### 持久化儲存
 
