@@ -87,6 +87,24 @@
                   :placeholder="k.placeholder || 'sk-…'"
                   class="w-full px-3 py-2 rounded-lg text-[11px] font-mono outline-none transition-theme"
                   :class="isDark ? 'bg-white/5 text-primary-cream border border-white/10 focus:border-primary-rose/50' : 'bg-primary-dark/5 text-primary-dark border border-primary-dark/10 focus:border-primary-rose/50'" />
+                <!-- Optional extras (e.g. MiniMax model + base URL) — render
+                     indented + plain text. Auto-save + auto-respawn just
+                     like the API key input. -->
+                <div v-if="k.extras" class="mt-1.5 pl-3 space-y-1.5 border-l-2"
+                  :class="isDark ? 'border-white/5' : 'border-primary-dark/5'">
+                  <div v-for="x in k.extras" :key="x.id">
+                    <label class="text-[9px] uppercase tracking-wider opacity-60 block mb-0.5"
+                      :class="isDark ? 'text-primary-cream' : 'text-primary-dark'">
+                      {{ x.label }}
+                    </label>
+                    <input :value="byokValues[x.id]"
+                      @input="updateKey(x.id, $event.target.value)"
+                      type="text"
+                      :placeholder="x.placeholder"
+                      class="w-full px-2.5 py-1.5 rounded text-[10px] font-mono outline-none transition-theme"
+                      :class="isDark ? 'bg-white/5 text-primary-cream/80 border border-white/10 focus:border-primary-rose/50' : 'bg-primary-dark/5 text-primary-dark/80 border border-primary-dark/10 focus:border-primary-rose/50'" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -224,9 +242,24 @@ const byokKeys = [
   { id: 'KIMI_API_KEY',     label: 'Kimi (Moonshot)',  hint: 'platform.moonshot.cn' },
   { id: 'OPENAI_API_KEY',   label: 'OpenAI',            hint: 'platform.openai.com' },
   { id: 'CLAUDE_API_KEY',   label: 'Anthropic Claude',  hint: 'console.anthropic.com' },
-  { id: 'MINIMAX_API_KEY',  label: 'MiniMax',           hint: 'minimax.chat' },
+  // MiniMax has multiple regional endpoints (api.minimax.chat for China,
+  // api.minimax.io / api.minimaxi.com international) and a fast-moving
+  // model lineup (M2, M2.7, abab6.5s-chat). Lock-step defaults break
+  // when a user's account only has access to one of those — let them
+  // override here without rebuilding.
+  {
+    id: 'MINIMAX_API_KEY',  label: 'MiniMax',           hint: 'minimax.chat',
+    extras: [
+      { id: 'MINIMAX_MODEL',    label: 'Model (optional)',    placeholder: 'MiniMax-M2 (default)' },
+      { id: 'MINIMAX_BASE_URL', label: 'Base URL (optional)', placeholder: 'https://api.minimax.chat/v1 (default)' }
+    ]
+  },
   { id: 'OPENWEATHER_KEY',  label: 'OpenWeather',       hint: 'openweathermap.org' }
 ]
+// Flat list of all key ids (primary + extras) — used by loadBYOK to
+// pre-populate inputs. Prefer this over the nested structure for any
+// "load every value" loop.
+const allKeyIds = byokKeys.flatMap(k => [k.id, ...(k.extras?.map(x => x.id) || [])])
 const byokValues = reactive({})
 const revealed = reactive({})  // not exposed in UI yet; future toggle for show/hide
 const applying = ref(false)
@@ -246,8 +279,13 @@ const PROVIDER_FOR_KEY = {
   // OPENWEATHER_KEY isn't an LLM, no provider entry — handled separately.
 }
 
+// Only count primary key fields, not extras (a stray MINIMAX_MODEL with
+// no API key shouldn't fool the warning banner into hiding itself).
 const hasAnyKey = computed(() =>
-  Object.values(byokValues).some(v => typeof v === 'string' && v.trim().length > 0)
+  byokKeys.some(k => {
+    const v = byokValues[k.id]
+    return typeof v === 'string' && v.trim().length > 0
+  })
 )
 
 const liveProvider = computed(() => {
@@ -294,8 +332,8 @@ async function loadBYOK() {
   if (!isTauri) return
   try {
     const { invoke } = await import('@tauri-apps/api/core')
-    for (const k of byokKeys) {
-      byokValues[k.id] = await invoke('get_api_key', { provider: k.id })
+    for (const id of allKeyIds) {
+      byokValues[id] = await invoke('get_api_key', { provider: id })
     }
   } catch (e) {
     console.warn('[BYOK] load failed:', e?.message)

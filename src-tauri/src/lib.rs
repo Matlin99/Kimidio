@@ -40,6 +40,11 @@ const BYOK_KEYS: &[&str] = &[
     "MINIMAX_API_KEY",
     "OPENWEATHER_KEY",
     "TTS_VOICE",
+    // MiniMax advanced overrides — let users target newer models
+    // (MiniMax-M2.7, abab6.5s-chat, etc.) and the international vs China
+    // endpoint without recompiling.
+    "MINIMAX_MODEL",
+    "MINIMAX_BASE_URL",
 ];
 
 const STORE_FILE: &str = "byok.json";

@@ -490,11 +490,45 @@ Plain text replies are ONLY for genuine chat with ZERO song mentions
         { role: 'user', content: message }
       ]
 
-      // Call LLM with provider selection
-      const response = await chat(requestedProvider || 'kimi', llmMessages, {
-        temperature: 0.8,
-        maxTokens: 800
-      })
+      // Try the user-selected provider first, then fall through to every
+      // other configured real provider. Without this, one bad key (e.g.
+      // a MiniMax account that lost M2 access mid-month) kills the whole
+      // chat experience even when the user has Kimi/Claude/OpenAI keys
+      // sitting right there. Other endpoints already do this — chat was
+      // the odd one out and it broke v0.1.3 friend testing.
+      const realConfigured = getProviderStatus()
+        .filter(p => p.configured && !p.isMock).map(p => p.name)
+      const tryOrder = []
+      if (requestedProvider && realConfigured.includes(requestedProvider)) tryOrder.push(requestedProvider)
+      for (const p of realConfigured) if (!tryOrder.includes(p)) tryOrder.push(p)
+      if (tryOrder.length === 0) tryOrder.push('mock')
+
+      let response = null
+      const errors = []
+      for (const providerName of tryOrder) {
+        try {
+          response = await chat(providerName, llmMessages, {
+            temperature: 0.8,
+            maxTokens: 800
+          })
+          if (response) {
+            if (providerName !== tryOrder[0]) {
+              console.log(`[chat] fell through to ${providerName} after: ${errors.map(e => e.split(':')[0]).join(', ')}`)
+            }
+            break
+          }
+        } catch (e) {
+          const tag = `${providerName}: ${e.message}`
+          console.warn(`[chat] ${tag}`)
+          errors.push(tag)
+        }
+      }
+      if (!response) {
+        // Surface every provider's error so the UI message is actually
+        // diagnostic instead of "trouble connecting" with no clue why.
+        const detail = errors.length ? errors.join(' | ') : 'no providers tried'
+        throw new Error(`All providers failed — ${detail}`)
+      }
 
       const assistantContent = response.content
 
@@ -562,10 +596,14 @@ Plain text replies are ONLY for genuine chat with ZERO song mentions
         //    all timed out at 30s).
         if (queue[0]?.source && queue[0]?.sourceId) {
           const first = queue[0]
+          // Was 12s; trimmed to 7s after the chat-side 60s timeout fix
+          // because we'd rather return the chat response sooner and let
+          // the user click + wait a moment than have the chat itself look
+          // dead. Most yt-dlp resolutions complete in 4-7s.
           await Promise.race([
             music.getUrl({ source: first.source, sourceId: first.sourceId, title: first.title, artist: first.artist })
               .catch(() => null),
-            new Promise(r => setTimeout(r, 12000))
+            new Promise(r => setTimeout(r, 7000))
           ])
         }
         ;(async () => {

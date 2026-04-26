@@ -38,9 +38,12 @@ export const useChatStore = defineStore('chat', () => {
     const url = `${apiBase.value}/api/chat`
     console.log(`[chat] POST ${url}`)
     try {
-      // 30s timeout — without this, a dead sidecar (e.g. apiBase pointing
-      // at an old random port after a respawn) leaves the user staring at
-      // "spinning the decks…" forever with no error feedback.
+      // 60s timeout — chat round-trip can take 25-40s for "recommend N
+      // tracks" requests (slow reasoning model + 4-6 SC/YT searches +
+      // first-track yt-dlp prefetch). 30s wasn't enough and produced
+      // "Fetch is aborted" errors right after a real LLM reply was on
+      // its way back. Need a generous ceiling that still trips on a
+      // genuinely dead sidecar.
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,7 +52,7 @@ export const useChatStore = defineStore('chat', () => {
           history: history.value.slice(0, -1), // exclude the message we just added
           provider: settings.llmProvider
         }),
-        signal: AbortSignal.timeout(30000)
+        signal: AbortSignal.timeout(60000)
       })
 
       if (!response.ok) {
