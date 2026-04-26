@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.15.2",
+    "better-sqlite3": "^12.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "msedge-tts": "^2.0.5",
+    "node-cron": "^4.2.1",
+    "node-ical": "^0.26.0",
+    "soundcloud.ts": "^0.7.4",
+    "ws": "^8.20.0",
+    "youtube-search-api": "^2.0.1",
+    "ytmusic-api": "^5.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "overrides": {
+    "soundcloud.ts": {
+      "browser-id3-writer": "4.4.0"
+    }
+  }
+}

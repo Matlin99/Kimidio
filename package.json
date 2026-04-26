@@ -1,0 +1,21 @@
+{
+  "name": "kimi-radio",
+  "version": "1.0.0",
+  "description": "個人 AI 電台 - Kimi Radio",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:web": "cd web && npm run dev",
+    "dev:server": "cd server && nodemon index.js",
+    "build": "cd web && npm run build",
+    "build:web:tauri": "cd web && TAURI_PLATFORM=1 npm run build",
+    "build:server": "bash server/build.sh",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build",
+    "install:all": "npm install && cd web && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1",
+    "concurrently": "^8.2.2"
+  }
+}

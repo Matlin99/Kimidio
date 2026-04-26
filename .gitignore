@@ -1,0 +1,61 @@
+# ─── Secrets ───────────────────────────────────────────────────────
+# NEVER commit API keys / env files
+.env
+.env.local
+.env.*.local
+**/state.db
+**/state.db-journal
+
+# ─── Dependencies ──────────────────────────────────────────────────
+node_modules/
+**/node_modules/
+
+# ─── Build artifacts ───────────────────────────────────────────────
+# Vite output
+dist/
+**/dist/
+# Rust target dir (cargo build)
+src-tauri/target/
+# Tauri release bundles
+src-tauri/target/release/bundle/
+# Web build
+web/dist/
+
+# ─── Bundled binaries (regenerate via server/build.sh + yt-dlp dl) ──
+# Sidecar binaries — 60-100MB each, 4 platforms = ~350MB. Build
+# locally with `bash server/build.sh` and download yt-dlp from
+# https://github.com/yt-dlp/yt-dlp/releases/latest
+src-tauri/binaries/kimi-server-*
+src-tauri/binaries/yt-dlp-*
+
+# ─── Runtime caches ────────────────────────────────────────────────
+server/tts-cache/
+**/tts-cache/
+
+# ─── OS / editor ───────────────────────────────────────────────────
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.claude/
+.aider*
+
+# ─── Logs ──────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── Plan / scratch ────────────────────────────────────────────────
+plans/
+scratch/
+
+# ─── Test artifacts (disposable screenshots) ──────────────────────
+test-*.png
+screenshot-*.png
+
+# ─── ytdl-core / yt-dlp scratch files ─────────────────────────────
+# 2.4MB YouTube player.js dumps from old ytdl-core attempts
+server/[0-9]*-player-script.js

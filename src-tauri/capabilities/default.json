@@ -1,0 +1,31 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default permissions for the main and pet windows: spawn the kimi-server sidecar, read/write the BYOK store, and call the custom IPC commands defined in lib.rs.",
+  "windows": [
+    "main",
+    "pet"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
+    "core:window:allow-unminimize",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    "core:window:allow-set-size",
+    "core:event:default",
+    "store:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/kimi-server",
+          "sidecar": true,
+          "args": []
+        }
+      ]
+    }
+  ]
+}

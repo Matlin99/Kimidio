@@ -1,0 +1,22 @@
+{
+  "morning": [
+    { "title": "Feather", "artist": "Nujabes", "album": "Modal Soul" },
+    { "title": "Luv(sic) pt3", "artist": "Nujabes", "album": "Modal Soul" },
+    { "title": "Reflection Eternal", "artist": "Nujabes", "album": "Metaphorical Music" }
+  ],
+  "focus": [
+    { "title": "Electric Relaxation", "artist": "A Tribe Called Quest", "album": "Midnight Marauders" },
+    { "title": "Rebirth of Slick", "artist": "Digable Planets", "album": "Reachin'" },
+    { "title": "Mass Appeal", "artist": "Gang Starr", "album": "Hard to Earn" }
+  ],
+  "evening": [
+    { "title": "Aruarian Dance", "artist": "Nujabes", "album": "Samurai Champloo Music Record" },
+    { "title": "Counting Stars", "artist": "Nujabes", "album": "Modal Soul" },
+    { "title": "Thank You", "artist": "Nujabes", "album": "Modal Soul" }
+  ],
+  "night": [
+    { "title": "The Sign", "artist": "Nujabes", "album": "Hydeout Productions" },
+    { "title": "Battlecry", "artist": "Nujabes", "album": "Samurai Champloo" },
+    { "title": "Imaginary Folklore", "artist": "Nujabes", "album": "Metaphorical Music" }
+  ]
+}
