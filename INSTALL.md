@@ -8,15 +8,34 @@
 
 下載 `Kimi Radio_0.1.0_aarch64.dmg`（Apple Silicon Mac M1/M2/M3/M4，~62MB）。
 
+### 步驟
+
 1. 雙擊 `.dmg` 開啟
 2. 把 **Kimi Radio** 圖示拖到 **Applications** 資料夾
-3. 第一次開啟：到 Applications，**右鍵點 Kimi Radio → Open**
+3. **不要直接雙擊 app！** 先做下面這一步 ↓
 
-> 這步很重要！直接雙擊會跳「無法驗證開發者」（因為 app 沒有 Apple 簽名）。
+### ⚠️ 第一次啟動前必做（重要）
+
+App 是 ad-hoc 簽名（沒花 $99 Apple Developer 註冊）。新版 macOS 會對「從瀏覽器下載 + 沒簽名」的 app 直接跳：
+
+> **「Kimi 收音機已損壞，無法打開。請將其丟棄。」**
 >
-> 用「右鍵 → Open」，會多出 **Open** 按鈕，按它確認就行。
->
-> 之後再開就直接雙擊正常啟動。
+> ⚠️ App **沒有壞** —— 這只是 macOS 對「unsigned + 有 quarantine 屬性」的講法。
+> **「右鍵 → Open」在 macOS 13+ 已經沒用，這個 dialog 沒有 Open 按鈕**。
+
+打開 **終端機 (Terminal)**（聚焦欄 ⌘+空白 → 輸入 `terminal` → Enter），貼這行進去執行：
+
+```bash
+xattr -cr "/Applications/Kimi Radio.app"
+```
+
+跑完之後**正常雙擊** Kimi Radio 就能開了。
+
+> 如果你**還沒下載前**就想避免這個提示：可以在 Terminal 直接 `curl` 下載，這樣就不會帶 quarantine 屬性：
+> ```bash
+> curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Radio_0.1.0_aarch64.dmg"
+> open Kimi*.dmg
+> ```
 
 ---
 
@@ -78,7 +97,7 @@ App 啟動後，看到 Landing 畫面**先別按 BEGIN**，先設定 API key：
 - **首次點 chat 推薦的歌會 loading ~10 秒**：app 用 yt-dlp 抓 YouTube 音源，第一首要解 cipher。同一首歌之後就秒進。
 - **某些冷門中文歌找不到 SoundCloud 來源**：會自動 fallback YouTube，但需要 yt-dlp 有空跑（並行歌單 prefetch 時可能 rate limit）。
 - **TTS DJ 有時候 429**：Kimi 限流時會退到備援 LLM，可能延遲 2-3 秒。
-- **macOS 升級後第一次開可能卡**：右鍵 → Open 一次重置權限即可。
+- **macOS 跳「已損壞，請丟棄」**：見上方 [§1 第一次啟動前必做]，跑 `xattr -cr "/Applications/Kimi Radio.app"` 一次即可（不是真的壞，是 quarantine 標記）。
 
 ---
 

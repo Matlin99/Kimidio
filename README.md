@@ -48,20 +48,21 @@ curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Ra
 2. Drag **Kimi Radio** into your **Applications** folder
 3. Eject the dmg
 
-#### 3. First launch (important!)
+#### 3. First launch (important — read this!)
 
-Because the app is **ad-hoc signed** (no $99 Apple Developer subscription), Gatekeeper will block the first launch.
+The app is **ad-hoc signed** (no $99 Apple Developer subscription). On modern macOS, downloads from a browser are tagged with a `com.apple.quarantine` attribute, and Gatekeeper will reject the app with **"Kimi Radio is damaged and can't be opened. You should move it to the Trash."**
 
-1. Open **Applications** in Finder
-2. **Right-click** on **Kimi Radio** → **Open**
-3. Click **Open** in the warning dialog
-4. From now on you can launch normally
+> ⚠️ The app is **not** actually damaged — this is just macOS's wording for "unsigned + quarantined." Right-click → Open does **not** bypass this dialog on macOS 13+.
 
-If macOS still complains, run this once in Terminal:
+**Fix:** open **Terminal** and run this single command once:
 
 ```bash
-xattr -d com.apple.quarantine "/Applications/Kimi Radio.app"
+xattr -cr "/Applications/Kimi Radio.app"
 ```
+
+This clears the quarantine flag. After that, double-click the app normally — it'll launch without complaint.
+
+> **Why it's safe:** the build is reproducible from this repo (`bash server/build.sh` + `npm run tauri:build`). If you don't trust the binary, build it yourself from source — see [Development](#development) below.
 
 #### 4. Configure your API key
 
@@ -234,20 +235,21 @@ curl -LO "https://github.com/Matlin99/Kimidio/releases/latest/download/Kimi%20Ra
 2. 把 **Kimi Radio** 拖到 **Applications** 資料夾
 3. 退出 dmg
 
-#### 3. 首次啟動（重要！）
+#### 3. 首次啟動（重要！必看）
 
-App 是 **ad-hoc 簽名**（沒花 $99 Apple Developer），首次開啟 Gatekeeper 會擋。
+App 是 **ad-hoc 簽名**（沒花 $99 Apple Developer）。新版 macOS 對「從瀏覽器下載 + 沒簽名」的 app 會直接跳 **「Kimi 收音機已損壞，無法打開。請將其丟棄。」**
 
-1. 打開 **Applications**
-2. **右鍵點 Kimi Radio** → **Open**
-3. 警告框點 **Open** 確認
-4. 之後就能正常開啟
+> ⚠️ App **沒有壞** —— 這只是 macOS 對「unsigned + 帶 quarantine 屬性」的講法。**右鍵 → Open 在 macOS 13+ 已經繞不過這個對話框**。
 
-如果還是擋，terminal 跑一次：
+**解法：**打開 **終端機 (Terminal)**，跑這一行：
 
 ```bash
-xattr -d com.apple.quarantine "/Applications/Kimi Radio.app"
+xattr -cr "/Applications/Kimi Radio.app"
 ```
+
+這行會清掉 quarantine 標記。跑完之後正常雙擊就能開了。
+
+> **為什麼安全：**整個 binary 可以從這個 repo 自己 reproduce build（`bash server/build.sh` + `npm run tauri:build`）。不放心就自己編，見下方 [Development](#development) 章節。
 
 #### 4. 填 API key
 
