@@ -17,9 +17,15 @@
               <p class="text-subtitle font-medium transition-theme" :class="isDark ? 'text-primary-cream' : 'text-primary-dark'">
                 AI DJ
               </p>
-              <p class="text-caption uppercase tracking-wider transition-theme" :class="isDark ? 'text-primary-cream/40' : 'text-primary-dark/40'">
-                {{ settings.llmProvider.toUpperCase() }} · Connected
-              </p>
+              <!-- Live status: reflects what the SERVER is actually using,
+                   not whatever localStorage says the user picked. Clicking
+                   when MOCK opens Settings so the user can fix the missing
+                   key in one tap. -->
+              <button @click="onStatusClick" type="button"
+                class="text-caption uppercase tracking-wider transition-colors duration-200 ease-out-expo"
+                :class="activeProviderClass">
+                {{ activeProvider.label }}
+              </button>
             </div>
           </div>
           <button @click="chat.closeChat" class="w-8 h-8 flex items-center justify-center rounded-full transition-colors duration-200 ease-out-expo"
@@ -197,7 +203,7 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, computed } from 'vue'
 import { useTheme } from '../composables/useTheme.js'
 import { useChatStore } from '../stores/chat.js'
 import { useSettingsStore } from '../stores/settings.js'
@@ -225,6 +231,50 @@ const settings = useSettingsStore()
 const player = usePlayerStore()
 
 const messagesRef = ref(null)
+
+// Re-fetch provider status when chat opens so the badge reflects current
+// sidecar reality (e.g. user just added a key in Settings).
+watch(() => chat.isOpen, (open) => {
+  if (open) settings.fetchProviders()
+})
+
+// Compute live provider state from /api/providers, NOT from localStorage.
+// `settings.llmProvider` is just the user's preference; it lies if the
+// preferred provider's key isn't actually configured on the server. This
+// makes the badge reflect what the chat request is *really* going to hit.
+const activeProvider = computed(() => {
+  const list = settings.availableProviders || []
+  const real = list.filter(p => p.configured && !p.isMock)
+  if (real.length === 0) {
+    return { kind: 'mock', label: '⚠ MOCK · TAP TO ADD KEY' }
+  }
+  const preferred = real.find(p => p.name === settings.llmProvider)
+  if (preferred) {
+    return { kind: 'live', label: `${preferred.name.toUpperCase()} · LIVE` }
+  }
+  // User picked a provider whose key isn't loaded; chat router falls back
+  // to the first available real provider (try-order in router.js).
+  const fb = real[0]
+  return { kind: 'fallback', label: `${fb.name.toUpperCase()} · LIVE (fallback)` }
+})
+
+const activeProviderClass = computed(() => {
+  if (activeProvider.value.kind === 'mock') {
+    return 'text-red-400 hover:text-red-300 cursor-pointer underline-offset-4 hover:underline'
+  }
+  if (activeProvider.value.kind === 'fallback') {
+    return isDark.value ? 'text-yellow-400/80' : 'text-yellow-600/80'
+  }
+  return isDark.value ? 'text-green-400/80' : 'text-green-600/80'
+})
+
+function onStatusClick() {
+  // Only acts when there's something to fix. Closing the chat first so the
+  // user can see the Settings overlay below it.
+  if (activeProvider.value.kind !== 'mock') return
+  chat.closeChat()
+  settings.isSettingsOpen = true
+}
 
 const sendMessage = () => {
   if (chat.isLoading) return
