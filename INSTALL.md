@@ -59,7 +59,23 @@ App 啟動後，看到 Landing 畫面**先別按 BEGIN**，先設定 API key：
 | Anthropic Claude | [console.anthropic.com](https://console.anthropic.com/settings/keys) | ⭐⭐ |
 | MiniMax | [minimax.chat](https://api.minimax.chat) | ⭐ |
 
-**只填一個就夠**。填好 → **Save Settings** → app 會自動重啟內部服務載入新 key。
+**只填一個就夠**。**貼上 key 後不用按任何按鈕** —— 1.5 秒後 app 會自動把 key 寫進 disk 並重啟內部 LLM 服務。
+
+### 怎麼確認 key 真的生效了
+
+API Keys 區塊右上角會顯示狀態：
+
+| 顯示 | 意思 |
+|------|------|
+| `No keys` | 一個 key 都沒填 |
+| `… Saved, waiting for restart` | 已寫進 disk，1.5 秒後會自動重啟 |
+| `Restarting…` | 正在重啟（約 3-5 秒） |
+| `✓ KIMI live` / `✓ MINIMAX live` | **成功** — 該 provider 已連上 |
+| `⚠ Restart failed` | key 可能無效，檢查有沒貼錯 / 配額用完 |
+
+每個 input 左邊小圓點同步顯示：**綠 = 已連上 / 黃 = 已存但還沒重啟好 / 灰 = 空**
+
+🟢 看到 **`✓ XXX live`** 就可以關掉 Settings 開始用了。
 
 ### 可選
 

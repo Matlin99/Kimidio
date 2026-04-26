@@ -45,27 +45,39 @@
             </div>
           </div>
           
-          <!-- API Keys (BYOK) — only meaningful in Tauri builds. The
-               keys are stored encrypted on disk via tauri-plugin-store
-               and injected into the sidecar's env on next (re)spawn. -->
+          <!-- API Keys (BYOK) — only meaningful in Tauri builds. Typing
+               into a field auto-saves to disk and respawns the sidecar
+               1.5s after the last keystroke (debounced). No "Apply"
+               button to forget. Per-row dot reflects live connection. -->
           <div v-if="isTauri">
             <div class="flex items-center justify-between mb-2">
               <p class="text-label uppercase tracking-wider transition-theme" :class="isDark ? 'text-primary-cream/50' : 'text-primary-dark/50'">
                 API Keys
               </p>
-              <button @click="applyKeys" :disabled="applying"
-                class="text-[10px] uppercase tracking-[0.2em] font-grotesk px-2 py-1 rounded-full transition-colors duration-200 ease-out-expo disabled:opacity-40"
-                :class="isDark ? 'text-primary-rose/80 hover:bg-primary-rose/10' : 'text-primary-rose hover:bg-primary-rose/10'">
-                {{ applying ? 'Restarting…' : '↻ Apply' }}
-              </button>
+              <span class="text-[10px] uppercase tracking-[0.2em] font-grotesk transition-colors duration-200"
+                :class="byokStatusClass">
+                {{ byokStatusText }}
+              </span>
             </div>
-            <p class="text-caption mb-2 transition-theme" :class="isDark ? 'text-primary-cream/40' : 'text-primary-dark/40'">
-              Bring your own keys. Stored locally and only sent to the provider you pick. After editing, click Apply to restart the AI sidecar.
+            <!-- Top banner: explains state in plain language -->
+            <div v-if="!hasAnyKey"
+              class="mb-2 px-3 py-2 rounded-lg text-caption border transition-theme"
+              :class="isDark ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-300/90' : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-700'">
+              ⚠ No keys yet. AI DJ runs in MOCK mode (canned replies). Paste a key below — server auto-restarts in 1.5s.
+            </div>
+            <p v-else class="text-caption mb-2 transition-theme" :class="isDark ? 'text-primary-cream/40' : 'text-primary-dark/40'">
+              Stored locally only. Auto-saved as you type; sidecar respawns 1.5s after the last keystroke.
             </p>
             <div class="space-y-2.5">
               <div v-for="k in byokKeys" :key="k.id">
                 <label class="text-caption mb-1 flex items-center justify-between transition-theme" :class="isDark ? 'text-primary-cream/60' : 'text-primary-dark/60'">
-                  <span>{{ k.label }}</span>
+                  <span class="flex items-center gap-1.5">
+                    <!-- Connection dot: green = configured + healthy on server,
+                         yellow = saved + restarting, gray = empty -->
+                    <span class="w-1.5 h-1.5 rounded-full transition-colors duration-300"
+                      :class="rowDotClass(k)"></span>
+                    {{ k.label }}
+                  </span>
                   <span v-if="k.hint" class="text-[9px] opacity-60 normal-case tracking-normal">{{ k.hint }}</span>
                 </label>
                 <input :value="byokValues[k.id]"
@@ -184,7 +196,7 @@
         <div class="p-4 border-t" :class="isDark ? 'border-white/10' : 'border-primary-dark/10'">
           <button @click="saveSettings"
             class="w-full py-2.5 rounded-lg bg-primary-rose text-white text-body font-medium hover:bg-primary-rose/80 transition-all duration-200 ease-out-expo hover:scale-[1.02] active:scale-[0.98]">
-            Save Settings
+            Done
           </button>
         </div>
       </div>
@@ -193,7 +205,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, reactive } from 'vue'
+import { onMounted, computed, ref, reactive, watch } from 'vue'
 import { useTheme } from '../composables/useTheme.js'
 import { useSettingsStore } from '../stores/settings.js'
 import { useCalendarStore } from '../stores/calendar.js'
@@ -216,6 +228,65 @@ const byokKeys = [
 const byokValues = reactive({})
 const revealed = reactive({})  // not exposed in UI yet; future toggle for show/hide
 const applying = ref(false)
+const lastApplyOk = ref(null)   // null=untouched, true=ok, false=failed
+// Debounce timer for save+apply. Single shared timer — typing in any field
+// resets it so we don't spam apply for multi-field edits.
+let applyTimer = null
+const APPLY_DEBOUNCE_MS = 1500
+
+// Map BYOK input id → server-side provider name (for matching against the
+// /api/providers status response).
+const PROVIDER_FOR_KEY = {
+  KIMI_API_KEY: 'kimi',
+  OPENAI_API_KEY: 'openai',
+  CLAUDE_API_KEY: 'claude',
+  MINIMAX_API_KEY: 'minimax',
+  // OPENWEATHER_KEY isn't an LLM, no provider entry — handled separately.
+}
+
+const hasAnyKey = computed(() =>
+  Object.values(byokValues).some(v => typeof v === 'string' && v.trim().length > 0)
+)
+
+const liveProvider = computed(() => {
+  const p = (settings.availableProviders || []).find(
+    p => p.configured && !p.isMock && p.name === settings.llmProvider
+  )
+  if (p) return p.name
+  const any = (settings.availableProviders || []).find(p => p.configured && !p.isMock)
+  return any?.name || null
+})
+
+const byokStatusText = computed(() => {
+  if (applying.value) return 'Restarting…'
+  if (lastApplyOk.value === false) return '⚠ Restart failed'
+  if (liveProvider.value) return `✓ ${liveProvider.value.toUpperCase()} live`
+  if (hasAnyKey.value) return '… Saved, waiting for restart'
+  return 'No keys'
+})
+
+const byokStatusClass = computed(() => {
+  if (applying.value) return isDark.value ? 'text-yellow-300' : 'text-yellow-600'
+  if (lastApplyOk.value === false) return 'text-red-400'
+  if (liveProvider.value) return 'text-green-400'
+  if (hasAnyKey.value) return 'text-yellow-400'
+  return isDark.value ? 'text-primary-cream/40' : 'text-primary-dark/40'
+})
+
+function rowDotClass(k) {
+  const v = byokValues[k.id]
+  const filled = typeof v === 'string' && v.trim().length > 0
+  if (!filled) return 'bg-neutral-500/40'
+  // OpenWeather isn't an LLM — green if filled (no health endpoint).
+  if (!PROVIDER_FOR_KEY[k.id]) return 'bg-green-500'
+  const provName = PROVIDER_FOR_KEY[k.id]
+  const live = (settings.availableProviders || []).find(
+    p => p.name === provName && p.configured && !p.isMock
+  )
+  if (live) return 'bg-green-500'
+  if (applying.value) return 'bg-yellow-400 animate-pulse'
+  return 'bg-yellow-400'
+}
 
 async function loadBYOK() {
   if (!isTauri) return
@@ -229,6 +300,8 @@ async function loadBYOK() {
   }
 }
 
+// Per-keystroke handler: write to disk immediately (cheap), schedule
+// debounced sidecar respawn so we don't kill+respawn for every character.
 async function updateKey(id, value) {
   byokValues[id] = value
   if (!isTauri) return
@@ -237,21 +310,41 @@ async function updateKey(id, value) {
     await invoke('save_api_key', { provider: id, value })
   } catch (e) {
     console.warn('[BYOK] save failed:', e?.message)
+    return
   }
+  if (applyTimer) clearTimeout(applyTimer)
+  applyTimer = setTimeout(applyKeys, APPLY_DEBOUNCE_MS)
 }
 
 async function applyKeys() {
   if (!isTauri || applying.value) return
   applying.value = true
+  lastApplyOk.value = null
   try {
     const { invoke } = await import('@tauri-apps/api/core')
     await invoke('apply_api_keys')
-    // Sidecar respawns; refresh providers + settings from the new server
-    setTimeout(() => settings.fetchProviders(), 1500)
+    // Sidecar takes ~1.5-3s to come back up + emit KIMI_PORT. Poll
+    // /api/providers a few times until we see the new key reflected.
+    for (let i = 0; i < 8; i++) {
+      await new Promise(r => setTimeout(r, 700))
+      try {
+        await settings.fetchProviders()
+        if (liveProvider.value) {
+          lastApplyOk.value = true
+          break
+        }
+      } catch {}
+    }
+    if (lastApplyOk.value === null) {
+      // Got through polling without seeing a live provider — could mean
+      // the user typed a bad key. Mark as failed so the badge turns red.
+      lastApplyOk.value = false
+    }
   } catch (e) {
     console.warn('[BYOK] apply failed:', e?.message)
+    lastApplyOk.value = false
   } finally {
-    setTimeout(() => { applying.value = false }, 1500)
+    applying.value = false
   }
 }
 
@@ -278,6 +371,16 @@ function refreshCalendar() {
 onMounted(() => {
   settings.fetchProviders()
   loadBYOK()
+})
+
+// Refresh provider status + key inputs every time the overlay opens so
+// the connection dot reflects current sidecar reality, not state from
+// app launch.
+watch(() => settings.isSettingsOpen, (open) => {
+  if (open) {
+    settings.fetchProviders()
+    loadBYOK()
+  }
 })
 
 const prefFields = [

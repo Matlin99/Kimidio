@@ -71,8 +71,9 @@ You need at least **one LLM key** to run. **Recommended: Kimi** — sign up at [
 1. Launch the app
 2. Click the ⚙ **Settings** icon (top-right of player card)
 3. Scroll to **API Keys** → paste your Kimi (or OpenAI / Claude / MiniMax) key
-4. Click **Save Settings** — the in-app server respawns automatically with your new key
-5. Click **BEGIN** and enjoy your radio
+4. **No button to click** — 1.5 s after the last keystroke the app auto-saves and respawns the AI sidecar
+5. Wait for the status badge in the API Keys header to switch from `… Saved, waiting for restart` → `✓ KIMI live` (≈ 3–5 s)
+6. Close Settings, click **BEGIN**, enjoy your radio
 
 Full walkthrough including troubleshooting & uninstall: [`INSTALL.md`](./INSTALL.md).
 
@@ -258,8 +259,9 @@ xattr -cr "/Applications/Kimi Radio.app"
 1. 開 app
 2. 點右上 ⚙ **設定** 圖示
 3. 滾到 **API Keys** → 貼 Kimi（或 OpenAI / Claude / MiniMax）的 key
-4. 按 **Save Settings** — 內部 server 會自動重啟載入新 key
-5. 按 **BEGIN** 開始用
+4. **不用按任何按鈕** —— 停手 1.5 秒，app 自動 save 並重啟 AI sidecar
+5. 等 API Keys 標題旁的狀態從 `… Saved, waiting for restart` → `✓ KIMI live`（約 3–5 秒）
+6. 關 Settings，按 **BEGIN**，開始用
 
 完整步驟 + 故障排解 + 解除安裝：[`INSTALL.md`](./INSTALL.md)。
 
